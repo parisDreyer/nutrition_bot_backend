@@ -1,0 +1,90 @@
+sqlite> .schema --indent
+CREATE TABLE NutritionFacts(
+  id INTEGER PRIMARY KEY,
+  Some_Num TEXT DEFAULT '',
+  Shrt_Descrpt TEXT DEFAULT '',
+  Water_g REAL DEFAULT 0,
+  Energ_Kcal REAL DEFAULT 0,
+  Protein_g REAL DEFAULT 0,
+  Lipid_Tot_g REAL DEFAULT 0,
+  Ash_g REAL DEFAULT 0,
+  Carbohydrt_g REAL DEFAULT 0,
+  Fiber_TD_g REAL DEFAULT 0,
+  Sugar_Tot_g REAL DEFAULT 0,
+  Calcium_mg REAL DEFAULT 0,
+  Iron_mg REAL DEFAULT 0,
+  Magnesium_mg REAL DEFAULT 0,
+  Phosphorus_mg REAL DEFAULT 0,
+  Potassium_mg REAL DEFAULT 0,
+  Sodium_mg REAL DEFAULT 0,
+  Zinc_mg REAL DEFAULT 0,
+  Copper_mg REAL DEFAULT 0,
+  Manganese_mg REAL DEFAULT 0,
+  Selenium_mcg REAL DEFAULT 0,
+  Vit_C_mg REAL DEFAULT 0,
+  Thiamin_mg REAL DEFAULT 0,
+  Riboflavin_mg REAL DEFAULT 0,
+  Niacin_mg REAL DEFAULT 0,
+  Panto_Acid_mg REAL DEFAULT 0,
+  Vit_B6_mg REAL DEFAULT 0,
+  Folate_Tot_mcg REAL DEFAULT 0,
+  Folic_Acid_mcg REAL DEFAULT 0,
+  Food_Folate_mcg REAL DEFAULT 0,
+  Folate_DFE_mcg REAL DEFAULT 0,
+  Choline_Tot_mg REAL DEFAULT 0,
+  Vit_B12_mcg REAL DEFAULT 0,
+  Vit_A_IU REAL DEFAULT 0,
+  Vit_A_RAE REAL DEFAULT 0,
+  Retinol_mcg REAL DEFAULT 0,
+  Alpha_Carot_mcg REAL DEFAULT 0,
+  Beta_Carot_mcg REAL DEFAULT 0,
+  Beta_Crypt_mcg REAL DEFAULT 0,
+  Lycopene_mcg REAL DEFAULT 0,
+  LutZea_mcg REAL DEFAULT 0,
+  Vit_E_mg REAL DEFAULT 0,
+  Vit_D_mcg REAL DEFAULT 0,
+  Vit_D_IU REAL DEFAULT 0,
+  Vit_K_mcg REAL DEFAULT 0,
+  FA_Sat_g REAL DEFAULT 0,
+  FA_Mono_g REAL DEFAULT 0,
+  FA_Poly_g REAL DEFAULT 0,
+  Cholestrl_mg REAL DEFAULT 0,
+  GmWt_one REAL DEFAULT 0,
+  GmWt_Desc_one TEXT DEFAULT '',
+  GmWt_two REAL DEFAULT 0,
+  GmWt_Desc_two TEXT DEFAULT '',
+  Refuse_Pct REAL DEFAULT 0
+);
+CREATE TABLE sqlite_sequence(name,seq);
+CREATE TABLE sessions(
+  id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+  session_token TEXT NOT NULL UNIQUE,
+  email TEXT NOT NULL UNIQUE,
+  created_at DATETIME DEFAULT(datetime('now', 'localtime')),
+  updated_at DATETIME DEFAULT(datetime('now', 'localtime'))
+);
+CREATE UNIQUE INDEX session_tokens ON sessions(session_token));
+CREATE UNIQUE INDEX sessions_email ON sessions(email);
+CREATE TABLE users(
+  id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+  name TEXT,
+  city TEXT,
+  country TEXT,
+  email TEXT NOT NULL UNIQUE,
+  password_digest TEXT NOT NULL,
+  created_at DATETIME DEFAULT(datetime('now', 'localtime')),
+  updated_at DATETIME DEFAULT(datetime('now', 'localtime'))
+);
+CREATE UNIQUE INDEX users_email ON users(email);
+CREATE TABLE usr_nutr_intake(
+  id INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+  email TEXT NOT NULL UNIQUE,
+  user_id INTEGER UNIQUE,
+  current_intake BLOB,
+  created_at DATETIME DEFAULT(datetime('now', 'localtime')),
+  updated_at DATETIME DEFAULT(datetime('now', 'localtime')),
+  last_reset_time DATETIME DEFAULT(datetime('now', 'localtime'))
+);
+CREATE UNIQUE INDEX usr_nutr_intake_email ON usr_nutr_intake(email);
+CREATE UNIQUE INDEX usr_nutr_intake_user_id ON usr_nutr_intake(user_id);
+sqlite> 
