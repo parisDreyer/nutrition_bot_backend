@@ -223,4 +223,4 @@ class UserOperations {
 
 };
 
-exports = { UserOperations };
+module.exports = { UserOperations };

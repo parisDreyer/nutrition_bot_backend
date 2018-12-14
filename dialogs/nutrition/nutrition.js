@@ -1,6 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
-const { passwordRules } = require('../utilities/password_validation');
+const { passwordRules } = require('../../utilities/passwordValidations.js');
 // nutrition.js defines the nutrition dialog
 const cities = require("all-the-cities"); // for city validation
 const {country_abbrevs, countries } = require('./resources/countryAbbreviations');
@@ -336,4 +336,4 @@ class Nutrition extends ComponentDialog {
 
 
 
-exports.GreetingDialog = Greeting;
+module.exports = {  NutritionDialog: Nutrition };

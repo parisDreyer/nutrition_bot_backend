@@ -13,4 +13,4 @@ passwordRules	                                    // Add rules to the validator 
     .is().not().oneOf(['Passw0rd', 'Password123']); // Blacklist these values
 
 
-exports = {passwordRules};
+module.exports = {passwordRules};

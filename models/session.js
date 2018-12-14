@@ -54,7 +54,8 @@ class Session {
                 WHERE id = :identific 
                 AND email = :em`, {
                 identific: this.id,
-                em: this.email
+                em: this.email,
+                nt: new_token
             });
         }
     }
@@ -122,3 +123,5 @@ class Session {
     }
 
 }
+
+module.exports = { Session }

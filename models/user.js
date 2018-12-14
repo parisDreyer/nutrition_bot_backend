@@ -2,11 +2,11 @@ const sqlite3 = require("sqlite3");
 const validator = require("validator"); // https://www.npmjs.com/package/validator
 
 const bcrypt = require('bcrypt');
-const { UserOperations } = require('./user_operations');
+const { UserOperations } = require('./user_operations.js');
 const { Food } = require('./food');
 
 
-const {passwordRules} = require('../utilities/password_validation');
+const {passwordRules} = require('./../utilities/passwordValidations.js');
 
 const USER_PARAMS = () => ({
         name: "",
@@ -154,4 +154,4 @@ class User extends UserOperations {
 
 
 
-exports = {  User, USER_PARAMS }
+module.exports = {  User, USER_PARAMS }

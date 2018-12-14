@@ -82,8 +82,8 @@ class BasicBot {
         // Create top-level dialog(s)
         this.dialogs = new DialogSet(this.dialogState);
         // Add the Greeting dialog to the set
-        this.dialogs.add(new GreetingDialog(GREETING_DIALOG, this.userProfileAccessor));
-
+        //this.dialogs.add(new GreetingDialog(GREETING_DIALOG, this.userProfileAccessor));
+        this.dialogs.add(new NutritionDialog(NUTRITION_DIALOG, this.userProfileAccessor));
         this.conversationState = conversationState;
         this.userState = userState;
     }
