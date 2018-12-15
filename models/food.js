@@ -113,4 +113,4 @@ class Food {
     }
 
 }
-exports = { Food };
+module.exports = { Food };

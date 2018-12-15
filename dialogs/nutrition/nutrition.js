@@ -104,7 +104,6 @@ class Nutrition extends ComponentDialog {
     const userProfile = await this.userProfileAccessor.get(step.context);
     if (userProfile === undefined) return await this.greetUser(step);
     
-
     if (!userProfile.email) {
         return await step.prompt(EMAIL_PROMPT, "What is your email?");
     } else if(!userProfile.password){
@@ -241,7 +240,6 @@ class Nutrition extends ComponentDialog {
           }
       }
     }
-
     if (hasCountry) {
       return VALIDATION_SUCCEEDED
     } else {
@@ -315,11 +313,12 @@ class Nutrition extends ComponentDialog {
     const userProfile = await this.userProfileAccessor.get(step.context);
     // Display to the user their profile information and end dialog
     await step.context
-      .sendActivity(`I am FoodMonk, a nutritional chatbot that suggests what to eat "
-            "based on what you have eaten. Tell me the foods you have eaten for the day "
-            "and i will suggest what you could eat next.`);
-    await step.context.sendActivity("To start, what is your name?");
-    return await step.endDialog();
+      .sendActivity(`I am FoodMonk, a nutritional chatbot that suggests what to eat 
+            based on what you have eaten. Tell me the foods you have eaten for the day 
+            and i will suggest what you could eat next.`);
+    return await step.context.sendActivity("To start, what is your name?");
+
+    //return await step.endDialog();
   }
   
   

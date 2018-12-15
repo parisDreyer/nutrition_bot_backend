@@ -34,6 +34,8 @@ const CANCEL_INTENT = 'Cancel';
 const HELP_INTENT = 'Help';
 const NONE_INTENT = 'None';
 
+// INTENT
+const NUTRITION_INTENT = 'Nutrition';
 // Supported LUIS Entities, defined in ./dialogs/greeting/resources/greeting.lu
 const USER_NAME_ENTITIES = ['userName', 'userName_patternAny'];
 const USER_LOCATION_ENTITIES = ['userLocation', 'userLocation_patternAny'];
@@ -106,29 +108,39 @@ class BasicBot {
         if (context.activity.type === ActivityTypes.Message) {
             let dialogResult;
             // Create a dialog context
-            const dc = await this.dialogs.createContext(context);
+            const dc = await this.dialogs
+              .createContext(context)
+              .catch(e => console.log(e));
 
             // Perform a call to LUIS to retrieve results for the current activity message.
-            const results = await this.luisRecognizer.recognize(context);
-            console.log(results);
-            const topIntent = LuisRecognizer.topIntent(results);
+            const results = await this.luisRecognizer
+              .recognize(context)
+              .catch(e => console.log(e));
+
+            const topIntent = "Nutrition";//LuisRecognizer.topIntent(results);
 
             // update user profile property with any entities captured by LUIS
             // This could be user responding with their name or city while we are in the middle of greeting dialog,
             // or user saying something like 'i'm {userName}' while we have no active multi-turn dialog.
-            await this.updateUserProfile(results, context);
+            // await this.updateUserProfile(results, context);
 
             // Based on LUIS topIntent, evaluate if we have an interruption.
             // Interruption here refers to user looking for help/ cancel existing dialog
-            const interrupted = await this.isTurnInterrupted(dc, results);
+            const interrupted = await this.isTurnInterrupted(dc, results).catch(
+              e => console.log(e)
+            );
             if (interrupted) {
                 if (dc.activeDialog !== undefined) {
                     // issue a re-prompt on the active dialog
-                    dialogResult = await dc.repromptDialog();
+                    dialogResult = await dc
+                      .repromptDialog()
+                      .catch(e => console.log(e));
                 } // Else: We dont have an active dialog so nothing to continue here.
             } else {
                 // No interruption. Continue any active dialogs.
-                dialogResult = await dc.continueDialog();
+                dialogResult = await dc
+                  .continueDialog()
+                  .catch(e => console.log(e));
             }
 
             // If no active dialog or no active dialog has responded,
@@ -140,13 +152,26 @@ class BasicBot {
                         // Determine what we should do based on the top intent from LUIS.
                         switch (topIntent) {
                             case GREETING_INTENT:
-                                await dc.beginDialog(GREETING_DIALOG);
+                                await dc.beginDialog(GREETING_DIALOG).catch(e => console.log(e));
+                                break;
+                            case NUTRITION_INTENT:
+                                await dc
+                                  .beginDialog(NUTRITION_DIALOG)
+                                  .catch(e =>console.log(e));
                                 break;
                             case NONE_INTENT:
                             default:
                                 // None or no intent identified, either way, let's provide some help
                                 // to the user
-                                await dc.context.sendActivity(`I didn't understand what you just said to me.`);
+                                await dc.context
+                                  .sendActivity(
+                                    `I didn't understand what you just said to me.`
+                                  )
+                                  .catch(e =>
+                                    console.log(
+                                      e
+                                    )
+                                  );
                                 break;
                             }
                         break;
@@ -158,38 +183,39 @@ class BasicBot {
                         break;
                     default:
                         // Unrecognized status from child dialog. Cancel all dialogs.
-                        await dc.cancelAllDialogs();
+                        await dc.cancelAllDialogs().catch(e => console.log(e));
                         break;
                 }
             }
         } else if (context.activity.type === ActivityTypes.ConversationUpdate) {
+
             // Handle ConversationUpdate activity type, which is used to indicates new members add to
             // the conversation.
             // see https://aka.ms/about-bot-activity-message to learn more about the message and other activity types
 
             // Do we have any new members added to the conversation?
-            if (context.activity.membersAdded.length !== 0) {
+            //if (context.activity.membersAdded.length !== 0) {
                 // Iterate over all new members added to the conversation
-                for (var idx in context.activity.membersAdded) {
+                //for (var idx in context.activity.membersAdded) {
                     // Greet anyone that was not the target (recipient) of this message
                     // the 'bot' is the recipient for events from the channel,
                     // context.activity.membersAdded == context.activity.recipient.Id indicates the
                     // bot was added to the conversation.
-                    if (context.activity.membersAdded[idx].id !== context.activity.recipient.id) {
+                    //if (context.activity.membersAdded[idx].id !== context.activity.recipient.id) {
                         // Welcome user.
                         // When activity type is "conversationUpdate" and the member joining the conversation is the bot
                         // we will send our Welcome Adaptive Card.  This will only be sent once, when the Bot joins conversation
                         // To learn more about Adaptive Cards, see https://aka.ms/msbot-adaptivecards for more details.
-                        const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
-                        await context.sendActivity({ attachments: [welcomeCard] });
-                    }
-                }
-            }
+                        //const welcomeCard = CardFactory.adaptiveCard(WelcomeCard);
+                        //await context.sendActivity({ attachments: [welcomeCard] });
+                    //}
+                //}
+            //}
         }
 
         // make sure to persist state at the end of a turn.
-        await this.conversationState.saveChanges(context);
-        await this.userState.saveChanges(context);
+        await this.conversationState.saveChanges(context).catch(e => console.log(e));
+        await this.userState.saveChanges(context).catch(e => console.log(e));
     }
 
     /**
@@ -228,33 +254,33 @@ class BasicBot {
      * @param {LuisResults} luisResults - LUIS recognizer results
      * @param {DialogContext} dc - dialog context
      */
-    async updateUserProfile(luisResult, context) {
-        // Do we have any entities?
-        if (Object.keys(luisResult.entities).length !== 1) {
-            // get userProfile object using the accessor
-            let userProfile = await this.userProfileAccessor.get(context);
-            if (userProfile === undefined) {
-                userProfile = new UserProfile();
-            }
-            // see if we have any user name entities
-            USER_NAME_ENTITIES.forEach(name => {
-                if (luisResult.entities[name] !== undefined) {
-                    let lowerCaseName = luisResult.entities[name][0];
-                    // capitalize and set user name
-                    userProfile.name = lowerCaseName.charAt(0).toUpperCase() + lowerCaseName.substr(1);
-                }
-            });
-            USER_LOCATION_ENTITIES.forEach(city => {
-                if (luisResult.entities[city] !== undefined) {
-                    let lowerCaseCity = luisResult.entities[city][0];
-                    // capitalize and set user name
-                    userProfile.city = lowerCaseCity.charAt(0).toUpperCase() + lowerCaseCity.substr(1);
-                }
-            });
-            // set the new values
-            await this.userProfileAccessor.set(context, userProfile);
-        }
-    }
+    // async updateUserProfile(luisResult, context) {
+    //     // Do we have any entities?
+    //     if (Object.keys(luisResult.entities).length !== 1) {
+    //         // get userProfile object using the accessor
+    //         let userProfile = await this.userProfileAccessor.get(context);
+    //         if (userProfile === undefined) {
+    //             userProfile = new UserProfile();
+    //         }
+    //         // see if we have any user name entities
+    //         USER_NAME_ENTITIES.forEach(name => {
+    //             if (luisResult.entities[name] !== undefined) {
+    //                 let lowerCaseName = luisResult.entities[name][0];
+    //                 // capitalize and set user name
+    //                 userProfile.name = lowerCaseName.charAt(0).toUpperCase() + lowerCaseName.substr(1);
+    //             }
+    //         });
+    //         USER_LOCATION_ENTITIES.forEach(city => {
+    //             if (luisResult.entities[city] !== undefined) {
+    //                 let lowerCaseCity = luisResult.entities[city][0];
+    //                 // capitalize and set user name
+    //                 userProfile.city = lowerCaseCity.charAt(0).toUpperCase() + lowerCaseCity.substr(1);
+    //             }
+    //         });
+    //         // set the new values
+    //         await this.userProfileAccessor.set(context, userProfile);
+    //     }
+    // }
 }
 
 module.exports.BasicBot = BasicBot;

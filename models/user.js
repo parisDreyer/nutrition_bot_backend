@@ -3,7 +3,7 @@ const validator = require("validator"); // https://www.npmjs.com/package/validat
 
 const bcrypt = require('bcrypt');
 const { UserOperations } = require('./user_operations.js');
-const { Food } = require('./food');
+const { Food } = require('./food.js');
 
 
 const {passwordRules} = require('./../utilities/passwordValidations.js');
@@ -18,6 +18,7 @@ const USER_PARAMS = () => ({
 
 class User extends UserOperations {
     constructor(user_params){
+        user_params = user_params ? user_params : USER_PARAMS;
         super();
         this.id = user_params.id;
         this.name = user_params.name;
